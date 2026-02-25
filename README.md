@@ -1,24 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Community Hub
+
+Niche micro-blogging platform with real‑time "Brewing Rooms" chat, built with Next.js, MongoDB, and Socket.io. Features include:
+
+- User registration / login (JWT-based auth)
+- Follow/unfollow system (many‑to‑many relationship)
+- Create posts with optional image uploads (Cloudinary)
+- Real‑time chat rooms powered by WebSockets
 
 ## Getting Started
 
-First, run the development server:
+1. **Clone repository** and open workspace.
+2. Create a `.env.local` file (see sample below):
+
+```env
+MONGODB_URI="your_mongodb_connection_string"
+JWT_SECRET="a_long_random_secret"
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+```
+
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/models` — Mongoose schemas for User, Post, Room, Message
+- `/pages/api` — REST and WebSocket endpoints
+- `/app` — React components and routes (app router)
+
+## Notes
+
+- Socket.io is initialized in `pages/api/socket.ts` and reused across requests.
+- Client-side token is stored in `localStorage` after login.
+- Image uploads are handled via Cloudinary with a helper at `/api/upload`.
+
+Feel free to extend with profiles, notifications, or a UI polish!
 
 ## Learn More
 
