@@ -16,7 +16,26 @@ export default function RoomsPage() {
   const [room, setRoom] = useState('general');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [username, setUsername] = useState('anonymous');
   const messagesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.username) {
+            setUsername(data.username);
+          }
+        })
+        .catch(() => {
+          setUsername('anonymous');
+        });
+    }
+  }, []);
 
   useEffect(() => {
     if (!socket) {
@@ -48,7 +67,7 @@ export default function RoomsPage() {
   }, [messages]);
 
   const send = () => {
-    socket.emit('message', { roomId: room, content: message, sender: 'anonymous' });
+    socket.emit('message', { roomId: room, content: message, sender: username });
     setMessage('');
   };
 

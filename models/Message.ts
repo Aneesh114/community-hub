@@ -1,15 +1,15 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IMessage extends Document {
-  room: mongoose.Types.ObjectId;
-  sender: mongoose.Types.ObjectId;
+  room: string;
+  sender: string;
   content: string;
   createdAt: Date;
 }
 
 const MessageSchema: Schema<IMessage> = new Schema({
-  room: { type: Schema.Types.ObjectId, ref: 'Room', required: true },
-  sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  room: { type: String, required: true, index: true },
+  sender: { type: String, required: true },
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });

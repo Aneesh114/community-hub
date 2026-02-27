@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   await dbConnect();
   try {
-    const msgs = await Message.find({ room: id }).sort({ createdAt: 1 });
+    const msgs = await Message.find({ room: id }).sort({ createdAt: 1 }).limit(100);
     res.status(200).json(msgs);
   } catch (err) {
     console.error(err);
