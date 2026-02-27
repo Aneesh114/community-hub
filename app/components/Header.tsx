@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import UserSearch from "./UserSearch";
 
 interface User {
   id: string;
@@ -42,10 +43,11 @@ export default function Header() {
 
   return (
     <header className="border-b bg-white dark:bg-black p-4">
-      <nav className="max-w-3xl mx-auto flex justify-between items-center">
-        <Link href="/" className="font-bold">
+      <nav className="max-w-4xl mx-auto flex justify-between items-center gap-4">
+        <Link href="/" className="font-bold text-lg">
           Community Hub
         </Link>
+        <UserSearch />
         <div className="space-x-4 flex items-center">
           <Link href="/feed">Feed</Link>
           <Link href="/rooms">Rooms</Link>
