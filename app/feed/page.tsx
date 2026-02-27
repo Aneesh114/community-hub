@@ -17,9 +17,14 @@ export default function FeedPage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   const loadPosts = async () => {
-    const res = await fetch('/api/posts');
-    const data = await res.json();
-    setPosts(data);
+    try {
+      const res = await fetch('/api/posts');
+      const data = await res.json();
+      setPosts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Failed to load posts', err);
+      setPosts([]);
+    }
   };
 
   useEffect(() => {

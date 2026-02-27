@@ -33,7 +33,8 @@ export default function RoomsPage() {
     // load existing messages
     fetch(`/api/rooms/${room}/messages`)
       .then((r) => r.json())
-      .then((data) => setMessages(data || []));
+      .then((data) => setMessages(Array.isArray(data) ? data : []))
+      .catch(() => setMessages([]));
 
     return () => {
       socket.emit('leaveRoom', room);
