@@ -26,41 +26,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ error: 'Server error' });
     }
   } else if (req.method === 'GET') {
-    // Get feed: personalized if user is logged in, global otherwise
+    // Get feed: personalized if user asks for following, global otherwise
     try {
+      const { type } = req.query;
       const token = req.headers.authorization?.split(' ')[1];
       let posts;
 
-      if (token) {
-        // personalized feed: only posts from users I follow
-        try {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
-          const user = await User.findById(decoded.userId);
-          if (user?.following.length > 0) {
-            posts = await Post.find({ author: { $in: user.following } })
-              .sort({ createdAt: -1 })
-              .limit(50)
-              .populate('author');
-          } else {
-            // no following, show all
-            posts = await Post.find({})
-              .sort({ createdAt: -1 })
-              .limit(50)
-              .populate('author');
-          }
-        } catch (err) {
-          // invalid token, show global feed
-          posts = await Post.find({})
-            .sort({ createdAt: -1 })
-            .limit(50)
-            .populate('author');
-        }
-      } else {
-        // global feed
-        posts = await Post.find({})
+      const getAll = async () => {
+        return Post.find({})
           .sort({ createdAt: -1 })
           .limit(50)
           .populate('author');
+      };
+
+      const getFollowing = async () => {
+        if (!token) return getAll();
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as { userId: string };
+          const user = await User.findById(decoded.userId);
+          console.log('User following list:', user?.following);
+          console.log('Following count:', user?.following?.length);
+          if (user?.following && user.following.length > 0) {
+            console.log('Filtering posts by following:', user.following);
+            const filtered = await Post.find({ author: { $in: user.following } })
+              .sort({ createdAt: -1 })
+              .limit(50)
+              .populate('author');
+            console.log('Filtered posts count:', filtered.length);
+            return filtered;
+          }
+          console.log('No following, returning all');
+          return getAll();
+        } catch (err) {
+          console.error('Error in getFollowing:', err);
+          return getAll();
+        }
+      };
+
+      if (type === 'all') {
+        posts = await getAll();
+      } else {
+        // default to following feed
+        posts = await getFollowing();
       }
       res.status(200).json(posts);
     } catch (err) {

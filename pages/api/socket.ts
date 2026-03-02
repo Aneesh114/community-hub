@@ -30,14 +30,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       socket.on('message', async (payload) => {
         const { roomId, content, sender } = payload;
-        // broadcast to room
-        io.to(roomId).emit('message', payload);
-        // persist
+        // persist then broadcast saved document so timestamp is included
         try {
           await dbConnect();
-          await new Message({ room: roomId, sender, content }).save();
+          const msg = await new Message({ room: roomId, sender, content }).save();
+          io.to(roomId).emit('message', msg);
         } catch (err) {
           console.error('Failed to save message', err);
+          // still broadcast payload without createdAt
+          io.to(roomId).emit('message', payload);
         }
       });
 

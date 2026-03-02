@@ -8,6 +8,7 @@ interface Post {
   author: { username: string };
   content: string;
   imageUrl?: string;
+  createdAt: string;
 }
 
 export default function FeedPage() {
@@ -20,7 +21,11 @@ export default function FeedPage() {
 
   const loadPosts = async () => {
     try {
-      const res = await fetch('/api/posts');
+      const headers: any = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      const res = await fetch(`/api/posts?type=${feedType}`, { headers });
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -31,7 +36,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     loadPosts();
-  }, []);
+  }, [feedType, token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,9 +99,14 @@ export default function FeedPage() {
       <ul className="space-y-4">
         {posts.map((p) => (
           <li key={p._id} className="border p-4">
+            <div className="flex items-center justify-between">
             <Link href={`/users/${p.author.username}`} className="font-bold text-blue-600 hover:underline">
               @{p.author.username}
             </Link>
+            <span className="text-sm text-gray-500">
+              {new Date(p.createdAt).toLocaleString()}
+            </span>
+          </div>
             <p className="mt-2">{p.content}</p>
             {p.imageUrl && (
               <Image

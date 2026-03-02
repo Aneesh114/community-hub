@@ -90,7 +90,13 @@ export default function RoomsPage() {
       >
         {messages.map((m, i) => (
           <div key={i} className="mb-2">
-            <strong>{m.sender}: </strong>{m.content}
+            <div className="flex items-baseline gap-2">
+              <strong>{m.sender}:</strong>
+              <span className="text-sm text-gray-500">
+                {m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : ''}
+              </span>
+            </div>
+            <div>{m.content}</div>
           </div>
         ))}
       </div>

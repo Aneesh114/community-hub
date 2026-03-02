@@ -36,7 +36,7 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // get current user
+    // get current user (once)
     const token = localStorage.getItem("token");
     if (token) {
       fetch("/api/auth/me", {
@@ -50,7 +50,9 @@ export default function UserProfilePage() {
         })
         .catch(() => console.error("failed to load current user"));
     }
+  }, []);
 
+  useEffect(() => {
     // fetch profile by id (username or ObjectID)
     fetch(`/api/users/${id}/profile`)
       .then((r) => r.json())
